@@ -32,7 +32,7 @@ The attack results are recorded in "xxx_distinguisher.txt".
 | ISA    | 1000   | 1000   | 1000   | 1000   | 1000   | 1000   | 1000   |
 | ADCA   | 1000   | 1000   | 1000   | 1000   | 1000   | 1000   | 3      |
 
-2. The following table depicts the ***more precisely*** computed time complexity of ADCA. The time complexity is computed by $N\times p\times T\times k$, where $p$ is the number of the degree-$d$ closure. Thus, the time complexity of ADCA is related to the degree value.
+2. The following table depicts the ***more precisely*** computed time complexity of ADCA. The time complexity is computed by $N\times p\times T\times k$, where $p$ is the number of the degree $d$ closure. Thus, the time complexity of ADCA is related to the degree value.
 
 | Degree | Complexity |
 | :----: | :----:     |
