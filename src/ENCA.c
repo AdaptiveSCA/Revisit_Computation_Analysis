@@ -78,8 +78,9 @@ uint8_t non8linear[256] =
 };
 uint8_t non4linear1[16] = {0x01, 0x02, 0x0C, 0x05, 0x07, 0x08, 0x0A, 0x0F, 0x04, 0x0D, 0x0B, 0x0E, 0x09, 0x06, 0x00, 0x03};
 uint8_t non4linear2[16] = {0x01, 0x02, 0x0C, 0x05, 0x07, 0x08, 0x0A, 0x0F, 0x04, 0x0D, 0x0B, 0x0E, 0x09, 0x06, 0x00, 0x03};
-unsigned int randseed;
+unsigned int rseed;
 
+// generation of an invertible matrix without identity rows
 void generate_invertible_mat()
 {
     int while_flag = 1, HW_flag = 1;
@@ -100,6 +101,8 @@ void generate_invertible_mat()
         }
     }
 }
+
+// generation of an invertible matrix with at least one row whose HW=1
 void generate_invertible_mat_HW1()
 {
     int while_flag = 1;
@@ -118,6 +121,8 @@ void generate_invertible_mat_HW1()
         }
     }
 }
+
+// generation of an non-invertible matrix without identity rows
 void generate_non_invertible_mat()
 {
     int while_flag = 1, HW_flag = 1;
@@ -138,6 +143,8 @@ void generate_non_invertible_mat()
         }
     }
 }
+
+// generation of an non-invertible matrix with at least one row whose HW=1
 void generate_non_invertible_mat_HW1()
 {
     int while_flag = 1;
@@ -156,11 +163,13 @@ void generate_non_invertible_mat_HW1()
         }
     }
 }
+
+// generation of a random 4-bit permutation
 void generate4Permutation(uint8_t *permutation)
 {
 	int i, j;
 	uint8_t temp;
-    InitRandom((randseed++) ^ ((unsigned int)time(NULL)));
+    InitRandom((rseed++) ^ ((unsigned int)time(NULL)));
 	for (i = 0; i < 16; i++)
 	{
 		permutation[i] = i;
@@ -173,11 +182,13 @@ void generate4Permutation(uint8_t *permutation)
 		permutation[i + j] = temp;
 	}
 }
+
+// generation of a random 8-bit permutation
 void generate8Permutation(uint8_t *permutation)
 {
 	int i, j;
 	uint8_t temp;
-    InitRandom((randseed++) ^ ((unsigned int)time(NULL)));
+    InitRandom((rseed++) ^ ((unsigned int)time(NULL)));
 	for (i = 0; i < 256; i++)
 	{
 		permutation[i] = i;
@@ -190,10 +201,134 @@ void generate8Permutation(uint8_t *permutation)
 		permutation[i + j] = temp;
 	}
 }
+
+// generation of a random n-bit permutation
+void generatePermutation(int bit, uint8_t *permutation)
+{
+    int con = 0x01 << bit;
+    int i, j;
+	uint8_t temp;
+    InitRandom((rseed++) ^ ((unsigned int)time(NULL)));
+	for (i = 0; i < con; i++)
+	{
+		permutation[i] = i;
+	}
+	for (i = 0; i < con - 1; i++)
+	{
+		j = cus_random()%(con - i);
+		temp = permutation[i];
+		permutation[i] = permutation[i + j];
+		permutation[i + j] = temp;
+	}
+}
+
+// generation of an 8-bit permutation with different algebraic degrees
+void gen_8bit_bijection(int degree, uint8_t *permutation)
+{
+    if(degree == 1)
+    {
+        M8 mat, mat_inv;
+        genMatpairM8(&mat, &mat_inv);
+        for(int i = 0; i < 256; i++)
+        {
+            permutation[i] = MatMulNumM8(mat, i);
+        }
+    }
+    if(degree == 2)
+    {
+        uint8_t x;
+        M8 mat, mat_inv;
+        genMatpairM8(&mat, &mat_inv);
+        uint8_t P1[8], P2[8], P3[4];
+        generatePermutation(3, P1);
+        generatePermutation(3, P2);
+        generatePermutation(2, P3);
+        for(int i = 0; i < 256; i++)
+        {
+            x = MatMulNumM8(mat, i);
+            permutation[i] = (P1[(x >> 5) & 7] << 5) | (P2[(x >> 2) & 7] << 2) | P3[x & 3];
+            permutation[i] = MatMulNumM8(mat_inv, permutation[i]);
+        }
+    }
+    if(degree == 3)
+    {
+        uint8_t x;
+        M8 mat, mat_inv;
+        genMatpairM8(&mat, &mat_inv);
+        uint8_t P1[16], P2[16];
+        generate4Permutation(P1);
+        generate4Permutation(P2);
+        for(int i = 0; i < 256; i++)
+        {
+            x = MatMulNumM8(mat, i);
+            permutation[i] = (P1[x >> 4] << 4) | P2[x & 15];
+            permutation[i] = MatMulNumM8(mat_inv, permutation[i]);
+        }
+    }
+    if(degree == 4)
+    {
+        uint8_t x;
+        M8 mat, mat_inv;
+        genMatpairM8(&mat, &mat_inv);
+        uint8_t P1[0x01 << 5], P2[0x01 << 3];
+        generatePermutation(5, P1);
+        generatePermutation(3, P2);
+        for(int i = 0; i < 256; i++)
+        {
+            x = MatMulNumM8(mat, i);
+            permutation[i] = (P2[x >> 5] << 5) | P1[x & 31];
+            permutation[i] = MatMulNumM8(mat_inv, permutation[i]);   
+        }
+    }
+    if(degree == 5)
+    {
+        uint8_t x;
+        M8 mat, mat_inv;
+        genMatpairM8(&mat, &mat_inv);
+        uint8_t P1[0x01 << 6], P2[0x01 << 2];
+        generatePermutation(6, P1);
+        generatePermutation(2, P2);
+        for(int i = 0; i < 256; i++)
+        {
+            x = MatMulNumM8(mat, i);
+            permutation[i] = (P2[x >> 6] << 6) | P1[x & 63]; // permutation[i] = (P1[i >> 2] << 2) | P2[i & 3]; -> degree-2 
+            permutation[i] = MatMulNumM8(mat_inv, permutation[i]);
+        }
+    }
+    if(degree == 6)
+    {
+        uint8_t x;
+        M8 mat, mat_inv;
+        genMatpairM8(&mat, &mat_inv);
+        uint8_t P1[0x01 << 7], P2[0x01 << 1];
+        generatePermutation(7, P1);
+        generatePermutation(1, P2);
+        for(int i = 0; i < 256; i++)
+        {
+            x = MatMulNumM8(mat, i);
+            permutation[i] = (P2[x >> 7] << 7) | P1[x & 127]; // permutation[i] = (P1[i >> 1] << 1) | P2[i & 1]; -> degree-1
+            permutation[i] = MatMulNumM8(mat_inv, permutation[i]);
+        }
+    }
+    if(degree == 7)
+    {
+        uint8_t x;
+        M8 mat, mat_inv;
+        genMatpairM8(&mat, &mat_inv);
+        generate8Permutation(permutation);
+        for(int i = 0; i < 256; i++)
+        {
+            permutation[i] = MatMulNumM8(mat, permutation[i]);
+        }
+    }
+}
+
+// generation of different encodings
 void generate_map(uint8_t map[256], int index)
 {
     int x;
     uint8_t temp;
+
     // linear encoding = invertible matrix with HW > 1; nonlinear encoding = 4-bit permutation
     if(index == 1)
     {   
@@ -207,6 +342,7 @@ void generate_map(uint8_t map[256], int index)
             map[x] = (non4linear1[temp >> 4] << 4) | (non4linear2[temp & 0xf]);
         }
     }
+
     // linear encoding = invertible matrix with HW = 1; nonlinear encoding = 4-bit permutation
     else if(index == 2)   
     {   
@@ -220,6 +356,7 @@ void generate_map(uint8_t map[256], int index)
             map[x] = (non4linear1[temp >> 4] << 4) | (non4linear2[temp & 0xf]);
         }
     }
+
     // linear encoding = non-invertible matrix with HW > 1; nonlinear encoding = 4-bit permutation
     else if(index == 3)   
     {   
@@ -233,6 +370,7 @@ void generate_map(uint8_t map[256], int index)
             map[x] = (non4linear1[temp >> 4] << 4) | (non4linear2[temp & 0xf]);
         }
     }
+
     // linear encoding = non-invertible matrix with HW = 1; nonlinear encoding = 4-bit permutation
     else if(index == 4)   
     {   
@@ -246,6 +384,7 @@ void generate_map(uint8_t map[256], int index)
             map[x] = (non4linear1[temp >> 4] << 4) | (non4linear2[temp & 0xf]);
         }
     }
+
     // linear encoding = invertible matrix with HW > 1; nonlinear encoding = 8-bit permutation
     else if(index == 5)   
     {   
@@ -258,6 +397,7 @@ void generate_map(uint8_t map[256], int index)
             map[x] = non8linear[temp];
         }
     }
+
     // linear encoding = invertible matrix with HW = 1; nonlinear encoding = 8-bit permutation
     else if(index == 6)   
     {   
@@ -270,6 +410,7 @@ void generate_map(uint8_t map[256], int index)
             map[x] = non8linear[temp];
         }
     }
+
     // linear encoding = non-invertible matrix with HW > 1; nonlinear encoding = 8-bit permutation
     else if(index == 7)   
     {   
@@ -282,6 +423,7 @@ void generate_map(uint8_t map[256], int index)
             map[x] = non8linear[temp];
         }
     }
+
     // linear encoding = non-invertible matrix with HW = 1; nonlinear encoding = 8-bit permutation
     else if(index == 8)   
     {   
@@ -294,6 +436,7 @@ void generate_map(uint8_t map[256], int index)
             map[x] = non8linear[temp];
         }
     }
+
     // linear encoding = invertible matrix with HW > 1
     else if(index == 9)   
     {   
@@ -304,6 +447,7 @@ void generate_map(uint8_t map[256], int index)
             map[x] = MatMulNumM8(invm, temp);
         }
     }
+
     // linear encoding = invertible matrix with HW = 1
     else if(index == 10)   
     {   
@@ -314,6 +458,7 @@ void generate_map(uint8_t map[256], int index)
             map[x] = MatMulNumM8(invm_HW1, temp);
         }
     }
+
     // linear encoding = non-invertible matrix with HW > 1
     else if(index == 11)   
     {   
@@ -324,6 +469,7 @@ void generate_map(uint8_t map[256], int index)
             map[x] = MatMulNumM8(non_invm, temp);
         }
     }
+
     // linear encoding = invertible matrix with HW = 1
     else if(index == 12)   
     {   
@@ -334,6 +480,7 @@ void generate_map(uint8_t map[256], int index)
             map[x] = MatMulNumM8(non_invm_HW1, temp);
         }
     }
+
     // nonlinear encoding = 4-bit permutation
     else if(index == 13)   
     {   
@@ -345,6 +492,7 @@ void generate_map(uint8_t map[256], int index)
             map[x] = (non4linear1[temp >> 4] << 4) | (non4linear2[temp & 0xf]);
         }
     }
+
     // nonlinear encoding = 8-bit permutation
     else if(index == 14)
     {   
@@ -355,11 +503,87 @@ void generate_map(uint8_t map[256], int index)
             map[x] = non8linear[temp];
         }
     }
-    else if(index == 15)
-    {   
+}
+
+void generate_map_degree(uint8_t map[256], int index) // generation of encodings with different algebraic degrees
+{
+    int x;
+    uint8_t temp;
+
+    // degree-1 8-bit encoding
+    if(index == 1) 
+    {
+        gen_8bit_bijection(1, non8linear);
         for(x = 0; x < 256; x++)
         {
-            map[x] = SBox[x ^ real_key];
+            temp = SBox[x ^ real_key];
+            map[x] = non8linear[temp];
+        }
+    }
+
+    // degree-2 8-bit non-linear encoding
+    else if(index == 2)
+    {
+        gen_8bit_bijection(2, non8linear);
+        for(x = 0; x < 256; x++)
+        {
+            temp = SBox[x ^ real_key];
+            map[x] = non8linear[temp];
+        }
+    }
+
+    // degree-3 8-bit non-linear encoding
+    else if(index == 3)
+    {
+        gen_8bit_bijection(3, non8linear);
+        for(x = 0; x < 256; x++)
+        {
+            temp = SBox[x ^ real_key];
+            map[x] = non8linear[temp];
+        }
+    }
+
+    // degree-4 8-bit non-linear encoding
+    else if(index == 4)
+    {
+        gen_8bit_bijection(4, non8linear);
+        for(x = 0; x < 256; x++)
+        {
+            temp = SBox[x ^ real_key];
+            map[x] = non8linear[temp];
+        }
+    }
+
+    // degree-5 8-bit non-linear encoding
+    else if(index == 5)
+    {
+        gen_8bit_bijection(5, non8linear);
+        for(x = 0; x < 256; x++)
+        {
+            temp = SBox[x ^ real_key];
+            map[x] = non8linear[temp];
+        }
+    }
+
+    // degree-6 8-bit non-linear encoding
+    else if(index == 6)
+    {
+        gen_8bit_bijection(6, non8linear);
+        for(x = 0; x < 256; x++)
+        {
+            temp = SBox[x ^ real_key];
+            map[x] = non8linear[temp];
+        }
+    }
+
+    // degree-7 8-bit non-linear encoding
+    else if(index == 7)
+    {
+        gen_8bit_bijection(7, non8linear);
+        for(x = 0; x < 256; x++)
+        {
+            temp = SBox[x ^ real_key];
+            map[x] = non8linear[temp];
         }
     }
 }
@@ -1050,7 +1274,7 @@ int ISA(uint8_t map[256])
     else return 0;
 }
 
-int ADCA(uint8_t map[256]) // algebraic degree computation analysis
+int ADCA(uint8_t map[256], int attack_degree) // algebraic degree computation analysis
 {
     uint8_t temp;
     int bit, x, cb;
@@ -1061,7 +1285,8 @@ int ADCA(uint8_t map[256]) // algebraic degree computation analysis
     uint8_t x_bit[256][8];
     int kc[256] = {0};
     uint8_t trail[8605][3];// Gaussian trail
-    for(int degree = 6; degree <= 6; degree++)
+    int degree = attack_degree; // adjustable attack degree
+    // for(int degree = 1; degree <= attack_degree; degree++) // Also can sum the results of different degrees
     {
         memset(Htrace, 0, sizeof(Htrace));
         for(x = 0; x < 256; x++)

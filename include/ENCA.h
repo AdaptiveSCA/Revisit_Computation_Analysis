@@ -47,14 +47,35 @@ static const uint8_t inv_SBox[256] =
 static const uint8_t real_key = 0x56;
 static const int total = 1000; // total >= 10
 
+// generation of an invertible matrix without identity rows
 void generate_invertible_mat();
+
+// generation of an invertible matrix with at least one row whose HW=1
 void generate_invertible_mat_HW1();
+
+// generation of an non-invertible matrix without identity rows
 void generate_non_invertible_mat();
+
+// generation of an non-invertible matrix with at least one row whose HW=1
 void generate_non_invertible_mat_HW1();
 
+// generation of a random 4-bit permutation
 void generate4Permutation(uint8_t *permutation);
+
+// generation of a random 8-bit permutation
 void generate8Permutation(uint8_t *permutation);
+
+// generation of a random n-bit permutation
+void generatePermutation(int bit, uint8_t *permutation);
+
+// generation of an 8-bit permutation with different algebraic degrees
+void gen_8bit_bijection(int degree, uint8_t *permutation);
+
+// generation of different encodings
 void generate_map(uint8_t map[256], int index);
+
+// generation of encodings with different algebraic degrees
+void generate_map_degree(uint8_t map[256], int index);
 
 int DCA(uint8_t map[256]);
 int IDCA(uint8_t map[256]);
@@ -65,6 +86,6 @@ int BCA(uint8_t map[256]);
 int SA(uint8_t map[256]);
 int MSA(uint8_t map[256]);
 int ISA(uint8_t map[256]);
-int ADCA(uint8_t map[256]);
+int ADCA(uint8_t map[256], int attack_degree);
 
 #endif

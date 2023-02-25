@@ -11,6 +11,6 @@ add_library(ENCA_LIB ${ENCA_SRC})
 
 add_executable(ENCA test/main.c)
 
-target_link_libraries(ENCA ENCA_LIB)
+target_link_libraries(ENCA ENCA_LIB m)
 
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -O2")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -O2")
