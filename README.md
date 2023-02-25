@@ -17,7 +17,7 @@ The attack results are recorded in "xxx_distinguisher.txt".
 
 ## New Results (Updating)
 
-1. Different attacks against internal encodings from degree-1 to degree-7 are illustrated as follows. Each attack case is executed over 1,000 times on randomly generated encodings.
+1. Different attacks against internal encodings with ***degree 1 to 7*** are illustrated as follows. Each attack case is executed over 1,000 times on randomly generated encodings.
 
 | Attack/Degree   | 1    | 2    | 3    | 4    | 5    | 6    |7    |
 | :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: |
