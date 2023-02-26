@@ -186,7 +186,7 @@ void Test_different_degrees()
 
         // //-----CA-----
         count = 0; 
-        for(int Test = 0; Test < 100; Test++)
+        for(int Test = 0; Test < total; Test++)
         {
             if((((Test + 1) % (int)(total * 0.2)) == 0) && (Test < total - 1)) printf("processing: %d\%\n", (Test + 1) * 100 / total);
             if(CA(map[Test])) count++;

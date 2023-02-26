@@ -22,15 +22,15 @@ The attack results are recorded in "xxx_distinguisher.txt".
 | Attack/Degree   | 1    | 2    | 3    | 4    | 5    | 6    |7    |
 | :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: |
 | DCA    | 222    | 842    | 544    | 505    | 583    | 186    | 4      |
-| IDCA   | 1000   | 1000   | 1000   | 1000   |Title   |Title   |Title   |
-| CPA    | 215    | 1000   | 1000   | 1000   |Title   |Title   |Title   |
-| CA     | 215    | 1000   | 1000   | 1000   |Title   |Title   |Title   |
-| MIA    | 215    | 1000   | 1000   | 1000   |Title   |Title   |Title   |
-| BCA    | 222    | 1000   | 1000   | 1000   |Title   |Title   |Title   |
-| SA     | 1000   | 1000   | 1000   | 1000   |Title   |Title   |Title   |
-| MSA    | 1000   | 0      | 0      | 0      |Title   |Title   |Title   |
-| ISA    | 1000   | 1000   | 1000   | 1000   | 1000   | 1000   | 1000   |
-| ADCA   | 1000   | 1000   | 1000   | 1000   | 1000   | 1000   | 3      |
+| IDCA   | 1000   | 1000   | 958    | 905    | 1000   | 518    | 1      |
+| CPA    | 229    | 843    | 527    | 487    | 571    | 168    | 5      |
+| CA     | 229    | 843    | 527    | 487    | 571    | 168    | 5      |
+| MIA    | 229    | 843    | 527    | 487    | 571    | 168    | 5      |
+| BCA    | 230    | 55     | 1      | 16     | 15     | 10     | 0      |
+| SA     | 1000   | 1000   | 1000   | 1000   | 1000   | 1000   | 4      |
+| MSA    | 1000   | 940    | 742    | 757    | 878    | 441    | 4      |
+| ISA    | 1000   | 1000   | 1000   | 1000   | 1000   | 1000   | 4      |
+| ADCA   | 1000   | 1000   | 1000   | 1000   | 1000   | 1000   | 4      |
 
 2. The following table depicts the ***more precisely*** computed time complexity of ADCA. The time complexity is computed by $N\times p\times T\times k$, where $p$ is the number of the degree $d$ closure. Thus, the time complexity of ADCA is related to the degree value.
 
