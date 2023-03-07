@@ -17,7 +17,7 @@ The attack results are recorded in "xxx_distinguisher.txt".
 
 ## New Results
 
-1. Different attacks against internal encodings with ***degree 1 to 7*** are illustrated as follows. Each attack case corresponds to the same 1,000 randomly generated encodings. The results depict the number of the passed tests for each attack.
+1. Different attacks against internal encodings with ***degree 1 to 7*** are illustrated as follows. Each attack case corresponds to the same 1,000 randomly generated encodings. The results depict the number of the broken tests for each attack.
 
 | Attack/Degree   | 1    | 2    | 3    | 4    | 5    | 6    |7    |
 | :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: |
